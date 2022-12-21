@@ -1,6 +1,9 @@
+// controllers 是處理資料的 function 跟 models 溝通 models 將請求處理完丟給 controllers
+
+
 import products from '../models/products.js'
 
-// 查全部
+// 建立資料
 export const createProduct = async (req, res) => {
   try {
     // model 裡的 .create() 的語法是 promise，所以這邊要用 async await
@@ -8,6 +11,7 @@ export const createProduct = async (req, res) => {
     res.status(200).json({ success: true, message: '', result })
   } catch (error) {
     console.log(error)
+    // 如果驗證錯誤
     if (error.name === 'ValidationError') {
       const key = Object.keys(error.errors)[0]
       const message = error.errors[key].message
@@ -36,6 +40,7 @@ export const getProduct = async (req, res) => {
   }
 }
 
+// 查所有商品
 export const getProducts = async (req, res) => {
   try {
     /*
@@ -54,10 +59,11 @@ export const getProducts = async (req, res) => {
     // 建立空陣列
     const query = { $and: [] }
     if (req.query.pricegte) {
-      // 檢查是不是數字
+      // 轉成數字
       const gte = parseInt(req.query.pricegte)
+      // 檢查是不是數字
       if (!isNaN(gte)) {
-        // 如果是數字就將資料push進$and這個陣列裡
+        // 如果是數字就將資料push進 query 這個陣列裡
         query.$and.push({ price: { $gte: gte } })
       }
     }
@@ -70,7 +76,9 @@ export const getProducts = async (req, res) => {
       }
     }
 
+    // 分類
     if (req.query.category) {
+      // $eq 等於
       query.$and.push({ category: { $eq: req.query.category } })
       // query.$and.push({ category: req.query.category })
     }
@@ -88,7 +96,7 @@ export const getProducts = async (req, res) => {
         // i 代表不分大小寫
         names.push(new RegExp(keyword, 'i'))
       }
-      // $in 包含， $nin 不包含，搜尋的名字 name 要包含正則表達式 names 陣列裡面的結果
+      // $in 包含， $nin 不包含，搜尋的名字要包含正則表達式 names 陣列裡面的結果
       query.$and.push({ name: { $in: names } })
     }
 

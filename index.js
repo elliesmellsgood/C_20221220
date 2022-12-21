@@ -2,19 +2,22 @@ import 'dotenv/config'
 import mongoose from 'mongoose'
 import express from 'express'
 import MongoSanitize from 'express-mongo-sanitize'
+// 解決網域不一致的問題，讓網頁前端抓的到資料
 import cors from 'cors'
 
+// 引進路由
 import productsRoute from './routes/products.js'
 import usersRoute from './routes/users.js'
 
 mongoose.connect(process.env.DB_URL)
-// 內建防資料庫攻擊 預設是 false 要改成 true
+// 內建防資料庫攻擊的語法 預設是 false 要改成 true
 mongoose.set('sanitizeFilter', true)
 
 const app = express()
 
 app.use(cors())
 
+// 解析使用者傳入的 json 資料
 app.use(express.json())
 
 // 錯誤處理 => (帶入四個參數)
